@@ -158,13 +158,8 @@ public class StribogImplTest {
             (byte) 0x5d, (byte) 0x9e, (byte) 0x40, (byte) 0x90, (byte) 0x4e, (byte) 0xfe, (byte) 0xd2, (byte) 0x9d};
         byte[] result = instance.getHash(message, outputMode);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
     }
     
-    /**
-     * Test of getHash method, of class StribogImpl.
-     */
     @Test
     public void TestFromHABR_512() {
         System.out.println("getHash");
@@ -189,8 +184,6 @@ public class StribogImplTest {
             (byte) 0x1B};
         byte[] result = instance.getHash(message, outputMode);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
     }
     
     @Test
@@ -213,8 +206,25 @@ public class StribogImplTest {
             (byte) 0xD8,(byte) 0xEF,(byte) 0x1E,(byte) 0x15,(byte) 0x9D};
         byte[] result = instance.getHash(message, outputMode);
         assertArrayEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
+    }
+    
+    @Test
+    public void TestSmallFile() {
+        System.out.println("getHash");
+        File file = new File("./12344444.bmp");
+        boolean outputMode = false;
+        StribogImpl instance = new StribogImpl();
+        byte[] expResult = {
+            (byte) 0xa9, (byte) 0xf8 , (byte) 0xfd , (byte) 0x51 , (byte) 0x99 , (byte) 0xa5 , 
+            (byte) 0xf8 , (byte) 0x17 , (byte) 0xca , (byte) 0xfe , (byte) 0x1f , (byte) 0x5a , 
+            (byte) 0x1 , (byte) 0x71 , (byte) 0x7b , (byte) 0x4e , (byte) 0xc4 , (byte) 0x67 , 
+            (byte) 0xdf , (byte) 0x94 , (byte) 0xc5 , (byte) 0x74 , (byte) 0xbb , (byte) 0x3a , 
+            (byte) 0xee , (byte) 0xae , (byte) 0x64 , (byte) 0xf5 , (byte) 0x5e , (byte) 0xe8 , 
+            (byte) 0xc7 , (byte) 0xfd};
+        byte[] result = instance.getHash(file, outputMode);
+        for(byte tmp: result)
+            System.out.print(Integer.toHexString(tmp & 0xff) + " ");
+        assertArrayEquals(expResult, result);
     }
     
 }

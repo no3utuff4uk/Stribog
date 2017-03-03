@@ -5,6 +5,8 @@
  */
 package ru.no3utuff4uk.stribog;
 
+import java.io.File;
+
 /**
  *
  * @author torne
@@ -16,18 +18,25 @@ public class StribogMain {
      */
     public static void main(String[] args) {
         Stribog hash = new StribogImpl();
-        byte[] message = {
-            (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, 
-            (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, 
-            (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, 
-            (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, 
-            (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, 
-            (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, 
-            (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, 
-            (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30};
-        byte[] result = hash.getHash(message, false);
+        
+        byte[] result;
+//        byte[] message = {
+//            (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, 
+//            (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, 
+//            (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, 
+//            (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, 
+//            (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, 
+//            (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, (byte) 0x37, (byte) 0x36, 
+//            (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30, (byte) 0x39, (byte) 0x38, 
+//            (byte) 0x37, (byte) 0x36, (byte) 0x35, (byte) 0x34, (byte) 0x33, (byte) 0x32, (byte) 0x31, (byte) 0x30};
+//        result = hash.getHash(message, false);
+//        for(byte tmp: result)
+//            System.out.print(Integer.toHexString(tmp & 0xff) + " ");
+        
+        File file = new File("./12344444.bmp");
+        result = hash.getHash(file, false);
         for(byte tmp: result)
-            System.out.print(Integer.toHexString(tmp & 0xff) + " ");
+            System.out.print(Integer.toHexString(tmp & 0xff) + " ");    
     }
     
 }

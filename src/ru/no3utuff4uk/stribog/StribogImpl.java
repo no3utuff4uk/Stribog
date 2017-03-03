@@ -4,6 +4,8 @@
 package ru.no3utuff4uk.stribog;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 /**
@@ -11,6 +13,30 @@ import java.util.Arrays;
  * @author no3utuff4uk
  */
 public class StribogImpl implements Stribog{
+    
+    protected byte[] h;
+    private byte[] sigma;
+    private byte[] N;
+    private final byte[] N512 = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00
+    };
+    private final byte[] N0 = {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    };
     
     private final int[] Pi = {
         0xFC, 0xEE, 0xDD, 0x11, 0xCF, 0x6E, 0x31, 0x16, 0xFB, 0xC4, 0xFA, 0xDA, 0x23, 0xC5, 0x04, 0x4D,
@@ -150,10 +176,51 @@ public class StribogImpl implements Stribog{
         0xfa,0xf4,0x17,0xd5,0xd9,0xb2,0x1b,0x99,0x48,0xbc,0x92,0x4a,0xf1,0x1b,0xd7,0x20
         }
         };
-
+    
+    protected void init(boolean outputMode)
+    {
+        h = new byte[64];
+        if(!outputMode)
+            Arrays.fill(h, (byte)0x01);
+        else
+            Arrays.fill(h, (byte)0x00);
+        
+        N = new byte[64];
+        Arrays.fill(N, (byte)0x00);
+        
+        sigma = new byte[64];
+        Arrays.fill(sigma, (byte)0x00);
+    }
+    
     @Override
     public byte[] getHash(File file, boolean outputMode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        init(outputMode);
+        byte[] buffer = new byte[64];
+        try(RandomAccessFile IStream = new RandomAccessFile(file, "r");)
+        { 
+            long length = IStream.length();
+            for(;length >= 64; length -=64)
+            {
+                IStream.seek(length - 64);
+                IStream.read(buffer, 0, 64);
+                
+                hashPart(buffer);
+            }
+            if(length != 0)
+            {
+                IStream.seek(0);
+                buffer = new byte[(int)length];
+                IStream.read(buffer, 0, (int)length);
+                hashPart(buffer);
+            }
+        }
+        catch(IOException exception)
+        {
+            System.err.println(exception.toString());
+        }
+        if(outputMode)
+            return h;
+        return Arrays.copyOf(h, 32);
     }
 
     @Override
@@ -163,31 +230,62 @@ public class StribogImpl implements Stribog{
     
     @Override
     public byte[] getHash(byte[] message, boolean outputMode) {
+        init(outputMode);
         return generateHash(message, outputMode);
     }
     
-    private byte[] generateHash(byte[] message, boolean outputMode)
+    protected void hashPart(byte[] messagePart)
     {
-        byte[] h = new byte[64];
-        
-        if(!outputMode)
-            Arrays.fill(h, (byte)0x01);
+        if(messagePart.length == 64)
+        {
+            h = compression(N, messagePart, h);
+            N = addModule(N, N512);
+            sigma = addModule(sigma, messagePart);
+        }
         else
-            Arrays.fill(h, (byte)0x00);
+        {
+            int inc = 0;
+            int length = messagePart.length * 8;
+            
+            byte[] tmpMessage = new byte[64];
+            Arrays.fill(tmpMessage, (byte) 0x00);
+            tmpMessage[64 - messagePart.length - 1] = (byte) 0x01;
+            
+            for(int i = 64 - messagePart.length; i < 64; i++)
+                tmpMessage[i] = messagePart[i + messagePart.length - 64];
+            
+            messagePart = tmpMessage;
+            
+            h = compression(N, messagePart, h);
         
-        byte[] N = new byte[64];
-        Arrays.fill(N, (byte)0x00);
-        
-        byte[] N512 = new byte[64]; //число 512
-        Arrays.fill(N512, (byte)0x00);
-        N512[62] = (byte) 0x02;
-        
-        byte[] N0 = new byte[64];   //число 0^512
-        Arrays.fill(N0, (byte) 0x00);
-        
-        byte[] sigma = new byte[64];
-        Arrays.fill(sigma, (byte)0x00);
-        
+            byte[] NMessage = new byte[64];
+            Arrays.fill(NMessage, (byte) 0x00);
+
+            
+            while(length > 0)
+            {
+                NMessage[63 - inc] = (byte) (length & 0xff);
+                length >>= 8;
+                inc++;
+            }
+
+            N = addModule(N, NMessage);
+            sigma = addModule(sigma, messagePart);
+
+            h = compression(N0, N, h);
+            h = compression(N0, sigma, h);
+        }
+    }
+    
+    
+    /**
+     * Старая версия. Создана первой для работы с массивом.
+     * @param message
+     * @param outputMode
+     * @return хеш 
+     */
+    private byte[] generateHash(byte[] message, boolean outputMode)
+    {        
         int length = message.length * 8;
         int inc = 0;
         
@@ -240,10 +338,7 @@ public class StribogImpl implements Stribog{
     }
     
     private byte[] addModule(byte[] a, byte[] b)
-    {
-        assert a.length == 64 &&
-               b.length == 64;
-        
+    {        
         byte[] result = new byte[64];
         int t = 0;
         
@@ -257,8 +352,6 @@ public class StribogImpl implements Stribog{
     
     private byte[] xor(byte[] a, byte[] b)
     {
-        assert a.length == b.length;
-        
         byte[] result = new byte[a.length];
         for(int i = 0; i < a.length; i++)
             result[i] = (byte) (a[i] ^ b[i]);
@@ -336,14 +429,13 @@ public class StribogImpl implements Stribog{
         byte[] result = new byte[64];
         for(int i = 0; i < 8; i++)
         {
-            //byte[] tmp = Arrays.copyOfRange(a, 8*i, 8*i + 8);
             for(int k = 0; k < 8; k++)
             {
                 for(int j = 0; j < 8; j++)
                 {
                     if((a[i*8+k] & (0x1 << (7-j))) != 0) 
                     {
-                        for(int l = 0; l < 8; l++)  //тут где-то лажолет!
+                        for(int l = 0; l < 8; l++)
                             result[8*i+l] ^= (byte)A[k*8+j][l];
                     }
                 }

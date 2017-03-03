@@ -4,7 +4,6 @@
 package ru.no3utuff4uk.stribog;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  *
@@ -34,4 +33,5 @@ public interface Stribog {
      * @return 256 или 512 разрядный хеш
      */
     public byte[] getHash(byte[] message, boolean outputMode);
+    
 }
