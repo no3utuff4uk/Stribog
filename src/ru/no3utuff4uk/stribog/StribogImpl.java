@@ -197,8 +197,10 @@ public class StribogImpl implements Stribog{
     }
     
     @Override
-    public byte[] getHash(File file, boolean outputMode) {
+    public byte[] getHash(File file, boolean outputMode)
+    {        
         init(outputMode);
+        
         byte[] buffer = new byte[64];
         try(RandomAccessFile IStream = new RandomAccessFile(file, "r");)    //Так удобней читать с конца файла
         { 
@@ -210,18 +212,17 @@ public class StribogImpl implements Stribog{
                 
                 hashPart(buffer);
             }
-            if(length != 0)
-            {
-                IStream.seek(0);
-                buffer = new byte[(int)length];
-                IStream.read(buffer, 0, (int)length);
-                hashPart(buffer);
-            }
+            
+            IStream.seek(0);
+            buffer = new byte[(int)length];
+            IStream.read(buffer, 0, (int)length);
+            hashPart(buffer);
         }
         catch(IOException exception)
         {
             System.err.println(exception.toString());
         }
+        
         if(outputMode)
             return h;
         return Arrays.copyOf(h, 32);

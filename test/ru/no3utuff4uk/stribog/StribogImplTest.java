@@ -222,8 +222,8 @@ public class StribogImplTest {
             (byte) 0xee , (byte) 0xae , (byte) 0x64 , (byte) 0xf5 , (byte) 0x5e , (byte) 0xe8 , 
             (byte) 0xc7 , (byte) 0xfd};
         byte[] result = instance.getHash(file, outputMode);
-        for(byte tmp: result)
-            System.out.print(Integer.toHexString(tmp & 0xff) + " ");
+//        for(byte tmp: result)
+//            System.out.print(Integer.toHexString(tmp & 0xff) + " ");
         assertArrayEquals(expResult, result);
     }
     

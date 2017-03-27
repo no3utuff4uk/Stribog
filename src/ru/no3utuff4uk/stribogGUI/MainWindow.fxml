@@ -58,7 +58,7 @@
                               <Insets />
                            </HBox.margin>
                            <children>
-                              <Button fx:id="getHashButton" layoutX="53.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#getHash" prefWidth="150.0" text="Get hash!" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0" />
+                              <Button fx:id="getHashButton" defaultButton="true" layoutX="53.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#getHash" prefWidth="150.0" text="Get hash!" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0" />
                               <Button fx:id="cancelButton" cancelButton="true" layoutY="2.0" mnemonicParsing="false" onAction="#cancelGetHash" prefWidth="150.0" text="Cancel" visible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0" />
                            </children>
                         </AnchorPane>

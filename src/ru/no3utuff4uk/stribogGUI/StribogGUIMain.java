@@ -28,6 +28,7 @@ public class StribogGUIMain extends Application {
         
         primaryStage.setScene(mainScene);
         primaryStage.setResizable(false);
+        
         primaryStage.show();
     }
 
